@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33617.297
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MangaWebApp", "MangaWebApp\MangaWebApp.csproj", "{CC1C4E04-579B-41CB-BFDA-FB9A97881B3F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MangaWebApp", "MangaWebApp\MangaWebApp.csproj", "{CC1C4E04-579B-41CB-BFDA-FB9A97881B3F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MangaWebAppRazor_Temp", "MangaWebAppRazor_Temp\MangaWebAppRazor_Temp.csproj", "{7CFCBB53-0D95-43CD-8E43-464E76FF2E46}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{CC1C4E04-579B-41CB-BFDA-FB9A97881B3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CC1C4E04-579B-41CB-BFDA-FB9A97881B3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CC1C4E04-579B-41CB-BFDA-FB9A97881B3F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7CFCBB53-0D95-43CD-8E43-464E76FF2E46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CFCBB53-0D95-43CD-8E43-464E76FF2E46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7CFCBB53-0D95-43CD-8E43-464E76FF2E46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7CFCBB53-0D95-43CD-8E43-464E76FF2E46}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
