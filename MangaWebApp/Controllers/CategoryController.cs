@@ -1,5 +1,6 @@
-﻿using MangaWebApp.Data;
-using MangaWebApp.Models;
+﻿
+using Manga.DataAccess.Data;
+using Manga.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MangaWebApp.Controllers

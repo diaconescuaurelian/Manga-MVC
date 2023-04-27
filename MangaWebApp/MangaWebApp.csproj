@@ -15,4 +15,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Manga.DataAccess\Manga.DataAccess.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -1,4 +1,5 @@
-﻿using MangaWebApp.Models;
+﻿
+using Manga.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 

@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace MangaWebApp.Migrations
+namespace Manga.DataAccess.Migrations
 {
     /// <inheritdoc />
     public partial class AddCategoryTable : Migration

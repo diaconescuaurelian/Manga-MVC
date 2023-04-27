@@ -1,4 +1,4 @@
-namespace MangaWebApp.Models
+namespace Manga.Models
 {
     public class ErrorViewModel
     {
