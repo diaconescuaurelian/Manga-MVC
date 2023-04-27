@@ -47,7 +47,9 @@ namespace MangaWebApp.Controllers
             {
                 return NotFound();
             }
-            Category category = _db.Categories.Find(id);
+            Category? category = _db.Categories.Find(id);
+            //Category? category2 = _db.Categories.FirstOrDefault(u => u.Id == id);
+            //Category? category3 = _db.Categories.Where(u => u.Id==id).FirstOrDefault();
             if (category == null)
             {
                 return NotFound();
@@ -63,11 +65,37 @@ namespace MangaWebApp.Controllers
             }
             if (ModelState.IsValid)
             {
-                _db.Categories.Add(obj);
+                _db.Categories.Update(obj);
                 _db.SaveChanges();
                 return RedirectToAction("Index");
             }
             return View();
+        }
+        public IActionResult Delete(int? id)
+        {
+            if (id == null || id == 0)
+            {
+                return NotFound();
+            }
+            Category? category = _db.Categories.Find(id);
+
+            if (category == null)
+            {
+                return NotFound();
+            }
+            return View(category);
+        }
+        [HttpPost, ActionName("Delete")] 
+        public IActionResult DeletePOST(int? id)
+        {
+            Category? obj = _db.Categories.Find(id); 
+            if (obj == null)
+            { 
+                return NotFound(); 
+            }
+            _db.Categories.Remove(obj);
+            _db.SaveChanges();
+            return RedirectToAction("Index");
         }
     }
 }
