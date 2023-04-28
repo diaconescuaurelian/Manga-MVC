@@ -8,14 +8,14 @@ namespace MangaWebApp.Controllers
 {
     public class CategoryController : Controller
     {
-        private readonly ICategoryRepository _categoryRepo;
-        public CategoryController(ICategoryRepository categoryRepo)
+        private readonly IUnitOfWork _unit;
+        public CategoryController(IUnitOfWork unit)
         {
-            _categoryRepo = categoryRepo;
+            _unit = unit;
         }
         public IActionResult Index()
         {
-            List<Category> objCategoryList = _categoryRepo.GetAll().ToList();
+            List<Category> objCategoryList = _unit.Category.GetAll().ToList();
             return View(objCategoryList);
         }
 
@@ -36,8 +36,8 @@ namespace MangaWebApp.Controllers
             //}
             if (ModelState.IsValid)
             {
-                _categoryRepo.Add(obj);
-                _categoryRepo.Save();
+                _unit.Category.Add(obj);
+                _unit.Save();
                 TempData["success"] = "Category created successfully";
                 return RedirectToAction("Index");
             }
@@ -50,7 +50,7 @@ namespace MangaWebApp.Controllers
             {
                 return NotFound();
             }
-            Category? category = _categoryRepo.Get(u => u.Id == id);
+            Category? category = _unit.Category.Get(u => u.Id == id);
             //Category? category2 = _db.Categories.FirstOrDefault(u => u.Id == id);
             //Category? category3 = _db.Categories.Where(u => u.Id==id).FirstOrDefault();
             if (category == null)
@@ -68,8 +68,8 @@ namespace MangaWebApp.Controllers
             }
             if (ModelState.IsValid)
             {
-                _categoryRepo.Update(obj);
-                _categoryRepo.Save();
+                _unit.Category.Update(obj);
+                _unit.Save();
                 TempData["success"] = "Category updated successfully";
                 return RedirectToAction("Index");
             }
@@ -81,7 +81,7 @@ namespace MangaWebApp.Controllers
             {
                 return NotFound();
             }
-            Category? category = _categoryRepo.Get(u => u.Id == id);
+            Category? category = _unit.Category.Get(u => u.Id == id);
 
             if (category == null)
             {
@@ -92,13 +92,13 @@ namespace MangaWebApp.Controllers
         [HttpPost, ActionName("Delete")] 
         public IActionResult DeletePOST(int? id)
         {
-            Category? obj = _categoryRepo.Get(u => u.Id == id); 
+            Category? obj = _unit.Category.Get(u => u.Id == id); 
             if (obj == null)
             { 
                 return NotFound(); 
             }
-            _categoryRepo.Remove(obj);
-            _categoryRepo.Save();
+            _unit.Category.Remove(obj);
+            _unit.Save();
             TempData["success"] = "Category deleted successfully";
             return RedirectToAction("Index");
         }
