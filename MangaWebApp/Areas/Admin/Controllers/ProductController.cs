@@ -1,5 +1,6 @@
 ﻿using Manga.DataAccess.Repository.IRepository;
 using Manga.Models;
+using Manga.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -21,27 +22,38 @@ namespace MangaWebApp.Areas.Admin.Controllers
         }
         public IActionResult Create()
         {
-            IEnumerable<SelectListItem> CategoryList = _unit.Category
+            ProductViewModel productVM= new()
+            {
+                CategoryList = _unit.Category
+                .GetAll().Select(u => new SelectListItem
+                {
+                    Text = u.Name,
+                    Value = u.Id.ToString()
+                }),
+                Product = new Product()
+            }; 
+            return View(productVM);
+        }
+        [HttpPost]
+        public IActionResult Create(ProductViewModel productVM)
+        {
+            if (ModelState.IsValid)
+            {
+                _unit.Product.Add(productVM.Product);
+                _unit.Save();
+                TempData["success"] = "Product created successfully";
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                productVM.CategoryList = _unit.Category
                 .GetAll().Select(u => new SelectListItem
                 {
                     Text = u.Name,
                     Value = u.Id.ToString()
                 });
-            //ViewBag.CategoryList = CategoryList;
-            ViewData["CategoryList"] = CategoryList;
-            return View();
-        }
-        [HttpPost]
-        public IActionResult Create(Product obj)
-        {
-            if (ModelState.IsValid)
-            {
-                _unit.Product.Add(obj);
-                _unit.Save();
-                TempData["success"] = "Product created successfully";
-                return RedirectToAction("Index");
             }
-            return View();
+            return View(productVM);
         }
         public IActionResult Edit(int? id)
         {
