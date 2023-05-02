@@ -20,7 +20,7 @@ namespace MangaWebApp.Areas.Admin.Controllers
                 
             return View(objProductList);
         }
-        public IActionResult Create()
+        public IActionResult Upsert(int? id)
         {
             ProductViewModel productVM= new()
             {
@@ -31,11 +31,22 @@ namespace MangaWebApp.Areas.Admin.Controllers
                     Value = u.Id.ToString()
                 }),
                 Product = new Product()
-            }; 
-            return View(productVM);
+            };
+            if (id == null || id == 0)
+            {
+                //create
+                return View(productVM);
+            }
+            else
+            {
+                //update
+                productVM.Product = _unit.Product.Get(u=>u.Id ==id);
+                return View(productVM);
+            }
+            
         }
         [HttpPost]
-        public IActionResult Create(ProductViewModel productVM)
+        public IActionResult Upsert(ProductViewModel productVM, IFormFile? file)
         {
             if (ModelState.IsValid)
             {
@@ -54,31 +65,6 @@ namespace MangaWebApp.Areas.Admin.Controllers
                 });
             }
             return View(productVM);
-        }
-        public IActionResult Edit(int? id)
-        {
-            if (id == null || id == 0)
-            {
-                return NotFound();
-            }
-            Product? product = _unit.Product.Get(u => u.Id == id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-            return View(product);
-        }
-        [HttpPost]
-        public IActionResult Edit(Product obj)
-        {
-            if (ModelState.IsValid)
-            {
-                _unit.Product.Update(obj);
-                _unit.Save();
-                TempData["success"] = "Product updated successfully";
-                return RedirectToAction("Index");
-            }
-            return View();
         }
         public IActionResult Delete(int? id)
         {
