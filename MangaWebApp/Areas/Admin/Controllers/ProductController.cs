@@ -3,6 +3,7 @@ using Manga.Models;
 using Manga.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Routing.Constraints;
 
 namespace MangaWebApp.Areas.Admin.Controllers
 {
@@ -10,13 +11,15 @@ namespace MangaWebApp.Areas.Admin.Controllers
     public class ProductController : Controller
     {
         public readonly IUnitOfWork _unit;
-        public ProductController(IUnitOfWork unit)
+        public readonly IWebHostEnvironment _webHostEnvironment;
+        public ProductController(IUnitOfWork unit, IWebHostEnvironment webHostEnvironment)
         {
-            _unit = unit;   
+            _unit = unit;
+            _webHostEnvironment = webHostEnvironment;
         }
         public IActionResult Index()
         {
-            List<Product> objProductList = _unit.Product.GetAll().ToList();
+            List<Product> objProductList = _unit.Product.GetAll(includeProperties:"Category").ToList();
                 
             return View(objProductList);
         }
@@ -50,7 +53,38 @@ namespace MangaWebApp.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                _unit.Product.Add(productVM.Product);
+                string wwwrootPath = _webHostEnvironment.WebRootPath;
+                if (file != null)
+                {
+                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                    string productPath= Path.Combine(wwwrootPath, @"images\product");
+                    
+                    if (!string.IsNullOrEmpty(productVM.Product.ImageUrl))
+                    {
+                        //delete the old image
+                        var oldImagePath = Path.Combine(wwwrootPath, productVM.Product.ImageUrl.TrimStart('\\'));
+                        if (System.IO.File.Exists(oldImagePath))
+                        {
+                            System.IO.File.Delete(oldImagePath);
+                        }
+                    }
+
+                    using (var fileStream = new FileStream(Path.Combine(productPath, fileName), FileMode.Create ) )
+                    {
+                        file.CopyTo(fileStream);
+                    }
+                    productVM.Product.ImageUrl = @"\images\product\" + fileName;
+                }
+
+                if (productVM.Product.Id == 0)
+                {
+                    _unit.Product.Add(productVM.Product);
+                }
+                else
+                {
+                    _unit.Product.Update(productVM.Product);
+                }
+                
                 _unit.Save();
                 TempData["success"] = "Product created successfully";
                 return RedirectToAction("Index");
