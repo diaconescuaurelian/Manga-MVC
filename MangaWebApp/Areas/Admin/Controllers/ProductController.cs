@@ -127,5 +127,15 @@ namespace MangaWebApp.Areas.Admin.Controllers
             TempData["success"] = "Product deleted successfully";
             return RedirectToAction("Index");
         }
+
+        #region API CALLS
+
+        [HttpGet]
+        public IActionResult GetAll() 
+        {
+            List<Product> objProductList = _unit.Product.GetAll(includeProperties: "Category").ToList();
+            return Json(new { data = objProductList });
+        }
+        #endregion
     }
 }
