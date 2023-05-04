@@ -4,6 +4,7 @@ using Manga.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing.Constraints;
+using System.Xml;
 
 namespace MangaWebApp.Areas.Admin.Controllers
 {
@@ -79,14 +80,16 @@ namespace MangaWebApp.Areas.Admin.Controllers
                 if (productVM.Product.Id == 0)
                 {
                     _unit.Product.Add(productVM.Product);
+                    TempData["success"] = "Product created successfully";
                 }
                 else
                 {
                     _unit.Product.Update(productVM.Product);
+
+                    TempData["success"] = "Product updated successfully";
                 }
                 
                 _unit.Save();
-                TempData["success"] = "Product created successfully";
                 return RedirectToAction("Index");
             }
             else
@@ -100,33 +103,6 @@ namespace MangaWebApp.Areas.Admin.Controllers
             }
             return View(productVM);
         }
-        public IActionResult Delete(int? id)
-        {
-            if (id == null || id == 0)
-            {
-                return NotFound();
-            }
-            Product? product = _unit.Product.Get(u => u.Id == id);
-
-            if (product == null)
-            {
-                return NotFound();
-            }
-            return View(product);
-        }
-        [HttpPost, ActionName("Delete")]
-        public IActionResult DeletePOST(int? id)
-        {
-            Product? obj = _unit.Product.Get(u => u.Id == id);
-            if (obj == null)
-            {
-                return NotFound();
-            }
-            _unit.Product.Remove(obj);
-            _unit.Save();
-            TempData["success"] = "Product deleted successfully";
-            return RedirectToAction("Index");
-        }
 
         #region API CALLS
 
@@ -135,6 +111,23 @@ namespace MangaWebApp.Areas.Admin.Controllers
         {
             List<Product> objProductList = _unit.Product.GetAll(includeProperties: "Category").ToList();
             return Json(new { data = objProductList });
+        }
+        [HttpDelete]
+        public IActionResult Delete(int? id)
+        {
+            var productToBeDeleted = _unit.Product.Get(u=> u.Id ==id);
+            if (productToBeDeleted == null)
+            {
+                return Json(new { success = false, message = "Error while deleting" });
+            }
+            var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, productToBeDeleted.ImageUrl.TrimStart('\\'));
+            if (System.IO.File.Exists(oldImagePath))
+            {
+                System.IO.File.Delete(oldImagePath);
+            }
+            _unit.Product.Remove(productToBeDeleted);
+            _unit.Save();
+            return Json(new { success = true, message = "Delete successful" });
         }
         #endregion
     }
