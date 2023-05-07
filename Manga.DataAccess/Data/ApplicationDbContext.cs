@@ -1,9 +1,11 @@
 ﻿using Manga.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Manga.DataAccess.Data
 {
-    public class ApplicationDbContext :DbContext
+    public class ApplicationDbContext :IdentityDbContext<IdentityUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
@@ -13,6 +15,8 @@ namespace Manga.DataAccess.Data
         public DbSet<Product> Products { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<Category>().HasData(
                 new Category { Id = 1, Name = "Shonen", DisplayOrder = 1 },
                 new Category { Id = 2, Name = "Shojo", DisplayOrder = 2 },
