@@ -1,14 +1,18 @@
 ﻿using Manga.DataAccess.Repository.IRepository;
 using Manga.Models;
 using Manga.Models.ViewModels;
+using Manga.Utility;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing.Constraints;
+using System.Data;
 using System.Xml;
 
 namespace MangaWebApp.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = SD.Role_Admin)]
     public class ProductController : Controller
     {
         public readonly IUnitOfWork _unit;
