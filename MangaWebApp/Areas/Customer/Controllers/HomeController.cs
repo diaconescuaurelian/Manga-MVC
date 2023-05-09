@@ -1,8 +1,10 @@
 ﻿
 using Manga.DataAccess.Repository.IRepository;
 using Manga.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace MangaWebApp.Areas.Customer.Controllers
 {
@@ -19,13 +21,45 @@ namespace MangaWebApp.Areas.Customer.Controllers
 
         public IActionResult Index()
         {
+            
             IEnumerable<Product> productList = _unit.Product.GetAll(includeProperties:"Category");
             return View(productList);
         }
         public IActionResult Details(int id)
         {
-            Product product = _unit.Product.Get(u=>u.Id==id, includeProperties: "Category");
-            return View(product);
+            ShoppingCart cart = new()
+            {
+                Product = _unit.Product.Get(u => u.Id == id, includeProperties: "Category"),
+                Count = 1,
+                ProductId = id
+            };
+            return View(cart);
+        }
+        [HttpPost]
+        [Authorize]
+        public IActionResult Details(ShoppingCart shoppingCart)
+        {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+            shoppingCart.ApplicationUserId = userId;
+
+            ShoppingCart cartFromDatabase = _unit.ShoppingCart.Get(u => u.ApplicationUserId == userId && u.ProductId == shoppingCart.ProductId);
+            if (cartFromDatabase != null)
+            {
+                //shopping cart exists
+                cartFromDatabase.Count += shoppingCart.Count;
+                _unit.ShoppingCart.Update(cartFromDatabase);
+            }
+            else
+            {
+                //add a cart record
+                _unit.ShoppingCart.Add(shoppingCart);
+                shoppingCart.Id = 0;
+            }
+            TempData["success"] = "Cart updated successfully";
+           
+            _unit.Save();
+            return RedirectToAction(nameof(Index));
         }
 
         public IActionResult Privacy()
