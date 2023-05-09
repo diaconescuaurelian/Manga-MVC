@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 
 namespace Manga.DataAccess.Repository.IRepository
 {
-    public interface IApplicationUserRepository : IRepository<ApplicationUser>
+    public interface ICategoryRepository : IRepository<Category>
     {
+        void Update(Category obj);
     }
 }
