@@ -24,13 +24,14 @@ namespace MangaWebApp.Areas.Customer.Controllers
 
             ShoppingCartViewModel = new()
             {
-                ShoppingCartList = _unit.ShoppingCart.GetAll(u => u.ApplicationUserId == userId, includeProperties: "Product")
+                ShoppingCartList = _unit.ShoppingCart.GetAll(u => u.ApplicationUserId == userId, includeProperties: "Product"),
+                OrderHeader = new()
             };
 
             foreach(var cart in  ShoppingCartViewModel.ShoppingCartList)
             {
                 cart.Price = cart.Product.Price;
-                ShoppingCartViewModel.OrderTotal += (cart.Price * cart.Count);
+                ShoppingCartViewModel.OrderHeader.OrderTotal += (cart.Price * cart.Count);
             }
 
             return View(ShoppingCartViewModel);
