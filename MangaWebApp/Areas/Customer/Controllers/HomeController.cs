@@ -1,7 +1,9 @@
 ﻿
 using Manga.DataAccess.Repository.IRepository;
 using Manga.Models;
+using Manga.Utility;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using System.Security.Claims;
@@ -21,7 +23,7 @@ namespace MangaWebApp.Areas.Customer.Controllers
 
         public IActionResult Index()
         {
-            
+           
             IEnumerable<Product> productList = _unit.Product.GetAll(includeProperties:"Category");
             return View(productList);
         }
@@ -49,16 +51,20 @@ namespace MangaWebApp.Areas.Customer.Controllers
                 //shopping cart exists
                 cartFromDatabase.Count += shoppingCart.Count;
                 _unit.ShoppingCart.Update(cartFromDatabase);
+                _unit.Save();
             }
             else
             {
                 //add a cart record
                 _unit.ShoppingCart.Add(shoppingCart);
                 shoppingCart.Id = 0;
+
+                _unit.Save();
+                HttpContext.Session.SetInt32(SD.SessionCart,
+                                             _unit.ShoppingCart.GetAll(u => u.ApplicationUserId == shoppingCart.ApplicationUserId).Count());
             }
             TempData["success"] = "Cart updated successfully";
            
-            _unit.Save();
             return RedirectToAction(nameof(Index));
         }
 

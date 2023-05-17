@@ -37,7 +37,7 @@ namespace MangaWebApp.Areas.Customer.Controllers
                 cart.Price = cart.Product.Price;
                 ShoppingCartViewModel.OrderHeader.OrderTotal += (cart.Price * cart.Count);
             }
-
+            HttpContext.Session.SetInt32(SD.SessionCart, _unit.ShoppingCart.GetAll(u => u.ApplicationUserId == User.FindFirstValue(ClaimTypes.NameIdentifier)).Count());
             return View(ShoppingCartViewModel);
         }
         public IActionResult Summary()
@@ -178,11 +178,13 @@ namespace MangaWebApp.Areas.Customer.Controllers
         }
         public IActionResult Minus(int cartId)
         {
-            var cartFromDb = _unit.ShoppingCart.Get(u => u.Id == cartId);
+            var cartFromDb = _unit.ShoppingCart.Get(u => u.Id == cartId, tracked: true);
             if (cartFromDb.Count <= 1)
             {
                 //remove from the cart
                 _unit.ShoppingCart.Remove(cartFromDb);
+                HttpContext.Session.SetInt32(SD.SessionCart,
+                _unit.ShoppingCart.GetAll(u => u.ApplicationUserId == cartFromDb.ApplicationUserId).Count() - 1);
             }
             else
             {
@@ -194,8 +196,11 @@ namespace MangaWebApp.Areas.Customer.Controllers
         }
         public IActionResult Remove(int cartId)
         {
-            var cartFromDb = _unit.ShoppingCart.Get(u => u.Id == cartId);
+            var cartFromDb = _unit.ShoppingCart.Get(u => u.Id == cartId, tracked:true);
+			
             _unit.ShoppingCart.Remove(cartFromDb);
+            HttpContext.Session.SetInt32(SD.SessionCart,
+                _unit.ShoppingCart.GetAll(u => u.ApplicationUserId == cartFromDb.ApplicationUserId).Count() - 1);
             _unit.Save();
             return RedirectToAction(nameof(Index));
         }
