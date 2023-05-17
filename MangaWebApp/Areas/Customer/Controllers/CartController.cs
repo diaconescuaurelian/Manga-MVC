@@ -160,6 +160,8 @@ namespace MangaWebApp.Areas.Customer.Controllers
 				_unit.Save();
 			}
 
+			HttpContext.Session.Clear();
+
 			List<ShoppingCart> shoppingCartList = _unit.ShoppingCart.GetAll(u=>u.ApplicationUserId == orderHeader.ApplicationUserId).ToList();
 
 			_unit.ShoppingCart.RemoveRange(shoppingCartList);
